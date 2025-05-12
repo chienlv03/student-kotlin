@@ -1,6 +1,8 @@
 package com.example.bai1
 
 data class StudentModel(
-    val hoten : String,
-    val mssv : String
+    var hoten : String,
+    var mssv : String,
+    val avatarId: Int,
+    var checkBox : Boolean
 )

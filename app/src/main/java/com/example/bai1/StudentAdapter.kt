@@ -1,42 +1,46 @@
 package com.example.bai1
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
+import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.example.bai1.StudentAdapter.ItemViewHolder
 
-class StudentAdapter(val students: List<StudentModel>): BaseAdapter() {
-    override fun getCount() = students.size
-
-    override fun getItem(position: Int) = students[position]
-
-    override fun getItemId(position: Int) = position.toLong()
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val itemView: View
-        val viewHolder: ViewHolder
-
-        if (convertView == null) {
-            itemView = LayoutInflater.from(parent?.context).inflate(R.layout.layout_student_item, null)
-            viewHolder = ViewHolder()
-            viewHolder.textHoten = itemView.findViewById(R.id.text_hoten)
-            viewHolder.textMssv = itemView.findViewById(R.id.text_mssv)
-            itemView.tag = viewHolder
-        } else {
-            itemView = convertView
-            viewHolder = itemView.tag as ViewHolder
-        }
-
-        val student = students[position]
-        viewHolder.textHoten.text = student.hoten
-        viewHolder.textMssv.text = student.mssv
-
-        return itemView
+class StudentAdapter(val students: List<StudentModel>, val callback: (Int) -> Unit): RecyclerView.Adapter<ItemViewHolder>() {
+    @SuppressLint("InflateParams")
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.layout_item, null)
+        return ItemViewHolder(itemView, callback)
     }
 
-    class ViewHolder {
-        lateinit var textHoten: TextView
-        lateinit var textMssv: TextView
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        val student = students[position]
+        holder.textHoten.text = student.hoten
+        holder.textMssv.text = student.mssv
+        holder.imageAvatar.setImageResource(student.avatarId)
+
+        holder.checkBox.isChecked = student.checkBox
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            student.checkBox = isChecked
+        }
+    }
+
+    override fun getItemCount() = students.size
+
+    class ItemViewHolder(itemView: View, val callback: (Int) -> Unit): RecyclerView.ViewHolder(itemView) {
+        val checkBox: CheckBox = itemView.findViewById(R.id.checkBox)
+        val textHoten: TextView = itemView.findViewById(R.id.text_hoten)
+        val textMssv: TextView = itemView.findViewById(R.id.text_mssv)
+        val imageAvatar: ImageView = itemView.findViewById(R.id.image_avatar)
+
+        init {
+            itemView.setOnClickListener {
+                callback(adapterPosition)
+            }
+        }
     }
 }
